@@ -40,10 +40,15 @@ jobs:
           echo "Application failed to start"
           exit 1
 
+      - name: Create ZAP work directory
+        run: |
+          mkdir -p "${{ github.workspace }}/zap-wrk"
+          chmod 777 "${{ github.workspace }}/zap-wrk"
+
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker run --rm --network host \
-            -v "${{ github.workspace }}:/zap/wrk:rw" \
+            -v "${{ github.workspace }}/zap-wrk:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
               -t http://localhost:3000 \
@@ -58,5 +63,5 @@ jobs:
         with:
           name: zap-scan-report
           path: |
-            zap-report.json
-            zap-report.html
+            zap-wrk/zap-report.json
+            zap-wrk/zap-report.html
